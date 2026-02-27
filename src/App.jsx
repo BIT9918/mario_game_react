@@ -151,6 +151,71 @@ const App = () => {
           { x: 3000, y: 80, speed: 0.4 },
           { x: 3800, y: 100, speed: 0.38 },
         ];
+      } else if (levelNum === 3) {
+        game.levelWidth = 6000;
+        game.totalCoins = 20;
+        game.platforms = [
+          { x: 0, y: 520, w: 400, h: 80, color: '#2F4F4F' },
+          { x: 550, y: 440, w: 200, h: 20, color: '#4682B4' },
+          { x: 900, y: 360, w: 250, h: 20, color: '#4682B4' },
+          { x: 1300, y: 280, w: 100, h: 20, color: '#4682B4' },
+          { x: 1550, y: 480, w: 450, h: 120, color: '#2F4F4F' },
+          { x: 2150, y: 400, w: 150, h: 20, color: '#4682B4' },
+          { x: 2450, y: 300, w: 250, h: 20, color: '#4682B4' },
+          { x: 2850, y: 460, w: 350, h: 140, color: '#2F4F4F' },
+          { x: 3350, y: 360, w: 100, h: 20, color: '#4682B4' },
+          { x: 3600, y: 240, w: 100, h: 20, color: '#4682B4' },
+          { x: 3850, y: 500, w: 400, h: 100, color: '#2F4F4F' },
+          { x: 4400, y: 400, w: 150, h: 20, color: '#4682B4' },
+          { x: 4700, y: 280, w: 150, h: 20, color: '#4682B4' },
+          { x: 5000, y: 480, w: 300, h: 120, color: '#2F4F4F' },
+          { x: 5450, y: 520, w: 550, h: 80, color: '#2F4F4F' },
+        ];
+        game.enemies = [
+          { x: 300, y: 490, vx: -3.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
+          { x: 650, y: 408, vx: -2.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 1050, y: 328, vx: -4.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
+          { x: 1650, y: 448, vx: -3.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 1800, y: 448, vx: -4.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
+          { x: 2600, y: 268, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 40 },
+          { x: 3000, y: 428, vx: -2.8, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 3100, y: 428, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 0 },
+          { x: 4000, y: 468, vx: -3.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 4150, y: 468, vx: -5.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
+          { x: 5150, y: 448, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 20 },
+          { x: 5600, y: 488, vx: -3.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 5750, y: 488, vx: -4.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
+        ];
+        game.coins = [
+          { x: 600, y: 380, collected: false, bob: 0 },
+          { x: 650, y: 380, collected: false, bob: 0 },
+          { x: 950, y: 300, collected: false, bob: 0 },
+          { x: 1050, y: 300, collected: false, bob: 0 },
+          { x: 1330, y: 220, collected: false, bob: 0 },
+          { x: 1600, y: 420, collected: false, bob: 0 },
+          { x: 1750, y: 420, collected: false, bob: 0 },
+          { x: 1900, y: 420, collected: false, bob: 0 },
+          { x: 2200, y: 340, collected: false, bob: 0 },
+          { x: 2500, y: 240, collected: false, bob: 0 },
+          { x: 2600, y: 240, collected: false, bob: 0 },
+          { x: 2900, y: 400, collected: false, bob: 0 },
+          { x: 3050, y: 400, collected: false, bob: 0 },
+          { x: 3380, y: 300, collected: false, bob: 0 },
+          { x: 3630, y: 180, collected: false, bob: 0 },
+          { x: 3950, y: 440, collected: false, bob: 0 },
+          { x: 4100, y: 440, collected: false, bob: 0 },
+          { x: 4450, y: 340, collected: false, bob: 0 },
+          { x: 4750, y: 220, collected: false, bob: 0 },
+          { x: 5050, y: 420, collected: false, bob: 0 },
+        ];
+        game.clouds = [
+          { x: 300, y: 90, speed: 0.5 },
+          { x: 1200, y: 140, speed: 0.4 },
+          { x: 2500, y: 70, speed: 0.55 },
+          { x: 3800, y: 120, speed: 0.45 },
+          { x: 4900, y: 100, speed: 0.5 },
+          { x: 5800, y: 80, speed: 0.6 },
+        ];
       }
     };
 
@@ -194,14 +259,28 @@ const App = () => {
       if (game.level === 1) {
         grad.addColorStop(0, '#5C94FC');
         grad.addColorStop(1, '#A0D8FF');
-      } else {
+      } else if (game.level === 2) {
         grad.addColorStop(0, '#FF7F50');
         grad.addColorStop(1, '#FFDAB9');
+      } else {
+        grad.addColorStop(0, '#191970');
+        grad.addColorStop(1, '#483D8B');
       }
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 800, 600);
 
-      ctx.fillStyle = game.level === 1 ? '#4A7043' : '#8B4513';
+      if (game.level === 3) {
+        ctx.fillStyle = '#FFFFFF';
+        for(let i=0; i<30; i++) {
+          const starX = (i * 123 + game.camera.x * 0.05) % 800;
+          const starY = (i * 87) % 300;
+          ctx.globalAlpha = Math.abs(Math.sin(Date.now() / 500 + i));
+          ctx.fillRect(starX, starY, 2, 2);
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      ctx.fillStyle = game.level === 1 ? '#4A7043' : game.level === 2 ? '#8B4513' : '#1A2A2A';
       ctx.beginPath();
       ctx.moveTo(0 - game.camera.x * 0.2, 520);
       ctx.lineTo(400 - game.camera.x * 0.2, 380);
@@ -213,10 +292,10 @@ const App = () => {
       ctx.lineTo(1600 - game.camera.x * 0.2, 520);
       ctx.fill();
 
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = game.level === 3 ? '#A9A9A9' : '#FFFFFF';
       game.clouds.forEach((cloud) => {
         const cx = (cloud.x - game.camera.x * 0.4) % (game.levelWidth) - 100;
-        ctx.globalAlpha = 0.9;
+        ctx.globalAlpha = game.level === 3 ? 0.4 : 0.9;
         ctx.beginPath();
         ctx.ellipse(cx + 60, cloud.y, 70, 25, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -229,7 +308,7 @@ const App = () => {
       });
       ctx.globalAlpha = 1;
 
-      ctx.fillStyle = game.level === 1 ? '#2E8B57' : '#556B2F';
+      ctx.fillStyle = game.level === 1 ? '#2E8B57' : game.level === 2 ? '#556B2F' : '#2F4F4F';
       for (let i = 0; i < (game.levelWidth / 280); i++) {
         const bx = (i * 280 - (game.camera.x * 0.8) % 280) - 50;
         ctx.beginPath();
@@ -317,6 +396,21 @@ const App = () => {
         ctx.fillRect(gx + 12, ey + 10, 10, 8);
         ctx.fillStyle = '#000000';
         ctx.fillRect(gx + 15, ey + 12, 4, 4);
+      } else if (type === 'spikey') {
+        ctx.fillStyle = '#4B0082';
+        ctx.fillRect(gx + 2, ey + 12, 30, 20);
+        ctx.fillStyle = '#E0E0E0';
+        ctx.beginPath();
+        ctx.moveTo(gx + 17, ey);
+        ctx.lineTo(gx + 7, ey + 12);
+        ctx.lineTo(gx + 27, ey + 12);
+        ctx.fill();
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(gx + 8, ey + 16, 6, 6);
+        ctx.fillRect(gx + 20, ey + 16, 6, 6);
+        ctx.fillStyle = '#FF0000';
+        ctx.fillRect(gx + 10, ey + 18, 3, 3);
+        ctx.fillRect(gx + 22, ey + 18, 3, 3);
       }
 
       ctx.restore();
@@ -526,7 +620,7 @@ const App = () => {
 
         if (checkCollision(p, { x: en.x, y: en.y, w: en.width, h: en.height })) {
           if (p.invuln > 0) return;
-          if (p.vy > 0 && p.y + p.height - 12 < en.y + en.height / 2) {
+          if (p.vy > 0 && p.y + p.height - 12 < en.y + en.height / 2 && en.type !== 'spikey') {
             en.alive = false;
             en.deathTime = Date.now();
             p.vy = -14;
@@ -605,6 +699,12 @@ const App = () => {
           playSound(800, 0.2);
           playSound(1200, 0.3);
           loadLevel(2);
+        } else if (game.level === 2) {
+          game.level = 3;
+          game.score += 2000;
+          playSound(800, 0.2);
+          playSound(1200, 0.3);
+          loadLevel(3);
         } else {
           game.isWin = true;
           setFinalScore(game.score);
@@ -718,7 +818,7 @@ const App = () => {
           border: '8px solid #FFD700'
         }}>
           <div style={{ fontSize: '58px', marginBottom: '20px' }}>
-            {win ? '🎉 YOU BEAT LEVEL 2! 🎉' : '💀 GAME OVER 💀'}
+            {win ? '🏆 YOU BEAT ALL 3 LEVELS! 🏆' : '💀 GAME OVER 💀'}
           </div>
           <div style={{ fontSize: '32px', marginBottom: '30px' }}>
             FINAL SCORE: {finalScore}
@@ -742,7 +842,7 @@ const App = () => {
       )}
 
       <div style={{ marginTop: '15px', fontSize: '19px', opacity: 0.8 }}>
-        ← → Move • ↑ Jump (press twice for double jump!) • Stomp Goombas • Avoid Fireballs!
+        ← → Move • ↑ Jump • Stomp Goombas • Avoid Fireballs & SPIKEY Enemies!
       </div>
     </div>
   );
