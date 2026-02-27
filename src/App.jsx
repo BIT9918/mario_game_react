@@ -171,19 +171,20 @@ const App = () => {
           { x: 5000, y: 480, w: 300, h: 120, color: '#2F4F4F' },
           { x: 5450, y: 520, w: 550, h: 80, color: '#2F4F4F' },
         ];
+        // Note: Spikey speeds increased for more aggressive movement
         game.enemies = [
           { x: 300, y: 490, vx: -3.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
-          { x: 650, y: 408, vx: -2.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 650, y: 408, vx: -4.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
           { x: 1050, y: 328, vx: -4.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
-          { x: 1650, y: 448, vx: -3.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 1650, y: 448, vx: -4.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
           { x: 1800, y: 448, vx: -4.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
           { x: 2600, y: 268, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 40 },
-          { x: 3000, y: 428, vx: -2.8, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 3000, y: 428, vx: -4.8, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
           { x: 3100, y: 428, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 0 },
-          { x: 4000, y: 468, vx: -3.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 4000, y: 468, vx: -4.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
           { x: 4150, y: 468, vx: -5.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
           { x: 5150, y: 448, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 20 },
-          { x: 5600, y: 488, vx: -3.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 5600, y: 488, vx: -4.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
           { x: 5750, y: 488, vx: -4.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
         ];
         game.coins = [
@@ -602,20 +603,22 @@ const App = () => {
             playSound(300, 0.1, 'square', 0.4);
           }
         } else {
+          // Goomba and Spikey Movement Logic
           en.x += en.vx * dt;
           en.frame += 0.15;
-          const MAX_ENEMY_SPEED = 5.0;
+          const MAX_ENEMY_SPEED = 6.0;
           if (Math.abs(en.vx) > MAX_ENEMY_SPEED) {
             en.vx = Math.sign(en.vx) * MAX_ENEMY_SPEED;
           }
           let onPlat = false;
+          // Platform Edge Detection to keep them pacing
           for (let plat of game.platforms) {
             if (en.x + en.width > plat.x && en.x < plat.x + plat.w && Math.abs(en.y + en.height - plat.y) < 8) {
               onPlat = true;
               break;
             }
           }
-          if (!onPlat) en.vx *= -1;
+          if (!onPlat) en.vx *= -1; // Reverse direction if hitting edge
         }
 
         if (checkCollision(p, { x: en.x, y: en.y, w: en.width, h: en.height })) {
@@ -749,6 +752,7 @@ const App = () => {
     };
 
     const keyDown = (e) => {
+      if(e.preventDefault) e.preventDefault();
       game.keys[e.key] = true;
       if (e.key === 'ArrowUp' && game.player.jumpsRemaining > 0) {
         game.player.vy = -16.5;
@@ -757,18 +761,37 @@ const App = () => {
         playSound(720, 0.12, 'triangle', 0.5);
         createParticles(game.player.x + 16, game.player.y + 48, 8, '#AAAAAA', 2, 2);
       }
-      if (e.key.toLowerCase() === 'r') window.location.reload();
+      if (e.key && e.key.toLowerCase() === 'r') window.location.reload();
     };
 
     const keyUp = (e) => {
+      if(e.preventDefault) e.preventDefault();
       game.keys[e.key] = false;
       if (e.key === 'ArrowUp' && game.player.vy < 0) {
         game.player.vy *= 0.55;
       }
     };
 
+    // Desktop Key Listeners
     window.addEventListener('keydown', keyDown);
     window.addEventListener('keyup', keyUp);
+
+    // Mobile Touch Listeners wiring
+    const bindTouch = (id, key) => {
+      const el = document.getElementById(id);
+      if(el) {
+        el.addEventListener('touchstart', (e) => { e.preventDefault(); keyDown({ key }); }, { passive: false });
+        el.addEventListener('touchend', (e) => { e.preventDefault(); keyUp({ key }); }, { passive: false });
+        // Failsafe for mouse users testing UI
+        el.addEventListener('mousedown', (e) => { e.preventDefault(); keyDown({ key }); });
+        el.addEventListener('mouseup', (e) => { e.preventDefault(); keyUp({ key }); });
+        el.addEventListener('mouseleave', (e) => { e.preventDefault(); keyUp({ key }); });
+      }
+    };
+
+    bindTouch('btn-left', 'ArrowLeft');
+    bindTouch('btn-right', 'ArrowRight');
+    bindTouch('btn-jump', 'ArrowUp');
 
     loadLevel(1);
     gameLoop();
@@ -780,10 +803,26 @@ const App = () => {
     };
   }, []);
 
+  // UI styling for mobile gamepad buttons
+  const btnStyle = {
+    background: 'rgba(255, 255, 255, 0.2)',
+    border: '2px solid rgba(255, 255, 255, 0.5)',
+    borderRadius: '50%',
+    width: '70px',
+    height: '70px',
+    fontSize: '30px',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    userSelect: 'none',
+    touchAction: 'none'
+  };
+
   return (
     <div style={{
       background: '#000',
-      height: '100vh',
+      minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -792,57 +831,84 @@ const App = () => {
       color: '#fff',
       overflow: 'hidden'
     }}>
-      <div style={{ marginBottom: '10px', fontSize: '36px', fontWeight: 'bold', textShadow: '4px 4px 0 #000' }}>
+      <div style={{ marginBottom: '10px', fontSize: '36px', fontWeight: 'bold', textShadow: '4px 4px 0 #000', textAlign: 'center' }}>
         SUPER MARIO 2026
       </div>
 
-      <canvas
-        ref={canvasRef}
-        style={{
-          border: '8px solid #000',
-          boxShadow: '0 0 50px rgba(255,215,0,0.8)',
-          imageRendering: 'pixelated'
-        }}
-      />
+      <div style={{ position: 'relative', width: '100%', maxWidth: '800px', aspectRatio: '4/3' }}>
+        <canvas
+          ref={canvasRef}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: '8px solid #000',
+            boxShadow: '0 0 50px rgba(255,215,0,0.8)',
+            imageRendering: 'pixelated',
+            boxSizing: 'border-box'
+          }}
+        />
 
-      {(gameOver || win) && (
+        {/* Mobile Controller UI */}
         <div style={{
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(0,0,0,0.9)',
-          padding: '50px 70px',
-          borderRadius: '20px',
-          textAlign: 'center',
-          border: '8px solid #FFD700'
+          bottom: '20px',
+          left: '0',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          padding: '0 20px',
+          boxSizing: 'border-box',
+          pointerEvents: 'none' // Lets clicks pass through the gap
         }}>
-          <div style={{ fontSize: '58px', marginBottom: '20px' }}>
-            {win ? '🏆 YOU BEAT ALL 3 LEVELS! 🏆' : '💀 GAME OVER 💀'}
+          <div style={{ display: 'flex', gap: '15px', pointerEvents: 'auto' }}>
+            <div id="btn-left" style={btnStyle}>←</div>
+            <div id="btn-right" style={btnStyle}>→</div>
           </div>
-          <div style={{ fontSize: '32px', marginBottom: '30px' }}>
-            FINAL SCORE: {finalScore}
+          <div style={{ pointerEvents: 'auto' }}>
+            <div id="btn-jump" style={{...btnStyle, background: 'rgba(228, 0, 15, 0.4)'}}>A</div>
           </div>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              fontSize: '26px',
-              padding: '18px 50px',
-              background: '#E4000F',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '12px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            PLAY AGAIN (PRESS R)
-          </button>
         </div>
-      )}
 
-      <div style={{ marginTop: '15px', fontSize: '19px', opacity: 0.8 }}>
-        ← → Move • ↑ Jump • Stomp Goombas • Avoid Fireballs & SPIKEY Enemies!
+        {(gameOver || win) && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'rgba(0,0,0,0.9)',
+            padding: '30px',
+            borderRadius: '20px',
+            textAlign: 'center',
+            border: '8px solid #FFD700',
+            width: '80%'
+          }}>
+            <div style={{ fontSize: '36px', marginBottom: '20px' }}>
+              {win ? '🏆 YOU WON! 🏆' : '💀 GAME OVER 💀'}
+            </div>
+            <div style={{ fontSize: '24px', marginBottom: '20px' }}>
+              FINAL SCORE: {finalScore}
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                fontSize: '20px',
+                padding: '15px 30px',
+                background: '#E4000F',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              PLAY AGAIN
+            </button>
+          </div>
+        )}
+      </div>
+      
+      <div style={{ marginTop: '15px', fontSize: '14px', opacity: 0.8, textAlign: 'center', padding: '0 10px' }}>
+        Desktop: ← → Move • ↑ Jump || Mobile: Use On-Screen Controls
       </div>
     </div>
   );
