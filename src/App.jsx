@@ -6,6 +6,11 @@ const App = () => {
   const [win, setWin] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
+  // --- CHEAT SYSTEM REFS ---
+  const cheatsRef = useRef({ godMode: false, infiniteJump: false });
+  const clickCountRef = useRef(0);
+  const cheatTimerRef = useRef(null);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d', { alpha: true });
@@ -171,7 +176,6 @@ const App = () => {
           { x: 5000, y: 480, w: 300, h: 120, color: '#2F4F4F' },
           { x: 5450, y: 520, w: 550, h: 80, color: '#2F4F4F' },
         ];
-        // Note: Spikey speeds increased for more aggressive movement
         game.enemies = [
           { x: 300, y: 490, vx: -3.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
           { x: 650, y: 408, vx: -4.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
@@ -510,6 +514,13 @@ const App = () => {
         ctx.fillText('← → MOVE    ↑ JUMP    COLLECT ALL COINS!', 360, 40);
       }
 
+      // God Mode visual indicator
+      if (cheatsRef.current.godMode) {
+        ctx.fillStyle = '#00FF00';
+        ctx.font = 'bold 16px Arial';
+        ctx.fillText('GOD MODE ENABLED', 30, 160);
+      }
+
       const actualFlagX = game.levelWidth - 150;
       const flagScreenX = actualFlagX - game.camera.x;
       ctx.fillStyle = '#8B4513';
@@ -603,7 +614,6 @@ const App = () => {
             playSound(300, 0.1, 'square', 0.4);
           }
         } else {
-          // Goomba and Spikey Movement Logic
           en.x += en.vx * dt;
           en.frame += 0.15;
           const MAX_ENEMY_SPEED = 6.0;
@@ -611,14 +621,13 @@ const App = () => {
             en.vx = Math.sign(en.vx) * MAX_ENEMY_SPEED;
           }
           let onPlat = false;
-          // Platform Edge Detection to keep them pacing
           for (let plat of game.platforms) {
             if (en.x + en.width > plat.x && en.x < plat.x + plat.w && Math.abs(en.y + en.height - plat.y) < 8) {
               onPlat = true;
               break;
             }
           }
-          if (!onPlat) en.vx *= -1; // Reverse direction if hitting edge
+          if (!onPlat) en.vx *= -1; 
         }
 
         if (checkCollision(p, { x: en.x, y: en.y, w: en.width, h: en.height })) {
@@ -631,7 +640,10 @@ const App = () => {
             playSound(600, 0.15, 'square', 0.6);
             createParticles(en.x + 17, en.y + 20, 22, '#8B4513', 4, 6);
           } else {
-            game.lives--;
+            // God Mode prevents life loss from enemies
+            if (!cheatsRef.current.godMode) {
+              game.lives--;
+            }
             if (game.lives <= 0) {
               game.isGameOver = true;
               setFinalScore(game.score);
@@ -654,7 +666,10 @@ const App = () => {
         if (checkCollision(p, proj)) {
           proj.active = false;
           if (p.invuln <= 0) {
-            game.lives--;
+            // God Mode prevents life loss from projectiles
+            if (!cheatsRef.current.godMode) {
+              game.lives--;
+            }
             if (game.lives <= 0) {
               game.isGameOver = true;
               setFinalScore(game.score);
@@ -719,7 +734,10 @@ const App = () => {
       }
 
       if (p.y > 650) {
-        game.lives--;
+        // God Mode prevents death from falling in pits
+        if (!cheatsRef.current.godMode) {
+          game.lives--;
+        }
         if (game.lives <= 0) {
           game.isGameOver = true;
           setFinalScore(game.score);
@@ -754,9 +772,13 @@ const App = () => {
     const keyDown = (e) => {
       if(e.preventDefault) e.preventDefault();
       game.keys[e.key] = true;
-      if (e.key === 'ArrowUp' && game.player.jumpsRemaining > 0) {
+      
+      // CHEAT INTEGRATION: Infinite Jumps bypasses jump limit
+      if (e.key === 'ArrowUp' && (cheatsRef.current.infiniteJump || game.player.jumpsRemaining > 0)) {
         game.player.vy = -16.5;
-        game.player.jumpsRemaining--;
+        if (!cheatsRef.current.infiniteJump) {
+          game.player.jumpsRemaining--;
+        }
         game.player.onGround = false;
         playSound(720, 0.12, 'triangle', 0.5);
         createParticles(game.player.x + 16, game.player.y + 48, 8, '#AAAAAA', 2, 2);
@@ -772,17 +794,14 @@ const App = () => {
       }
     };
 
-    // Desktop Key Listeners
     window.addEventListener('keydown', keyDown);
     window.addEventListener('keyup', keyUp);
 
-    // Mobile Touch Listeners wiring
     const bindTouch = (id, key) => {
       const el = document.getElementById(id);
       if(el) {
         el.addEventListener('touchstart', (e) => { e.preventDefault(); keyDown({ key }); }, { passive: false });
         el.addEventListener('touchend', (e) => { e.preventDefault(); keyUp({ key }); }, { passive: false });
-        // Failsafe for mouse users testing UI
         el.addEventListener('mousedown', (e) => { e.preventDefault(); keyDown({ key }); });
         el.addEventListener('mouseup', (e) => { e.preventDefault(); keyUp({ key }); });
         el.addEventListener('mouseleave', (e) => { e.preventDefault(); keyUp({ key }); });
@@ -803,7 +822,6 @@ const App = () => {
     };
   }, []);
 
-  // UI styling for mobile gamepad buttons
   const btnStyle = {
     background: 'rgba(255, 255, 255, 0.2)',
     border: '2px solid rgba(255, 255, 255, 0.5)',
@@ -819,6 +837,26 @@ const App = () => {
     touchAction: 'none'
   };
 
+  // The hidden cheat trigger function
+  const handleSecretClick = () => {
+    clickCountRef.current += 1;
+    clearTimeout(cheatTimerRef.current);
+    
+    if (clickCountRef.current >= 3) {
+      const code = window.prompt("Terminal Access:");
+      if (code === "991812") {
+        cheatsRef.current.godMode = true;
+        cheatsRef.current.infiniteJump = true;
+        alert("DEV MODE ENABLED: GOD MODE & INFINITE JUMP ON");
+      }
+      clickCountRef.current = 0;
+    } else {
+      cheatTimerRef.current = setTimeout(() => {
+        clickCountRef.current = 0;
+      }, 1000); // Resets clicks if you wait longer than 1 second
+    }
+  };
+
   return (
     <div style={{
       background: '#000',
@@ -831,7 +869,19 @@ const App = () => {
       color: '#fff',
       overflow: 'hidden'
     }}>
-      <div style={{ marginBottom: '10px', fontSize: '36px', fontWeight: 'bold', textShadow: '4px 4px 0 #000', textAlign: 'center' }}>
+      {/* Secret Click Zone on Title */}
+      <div 
+        onClick={handleSecretClick}
+        style={{ 
+          marginBottom: '10px', 
+          fontSize: '36px', 
+          fontWeight: 'bold', 
+          textShadow: '4px 4px 0 #000', 
+          textAlign: 'center',
+          cursor: 'pointer',
+          userSelect: 'none'
+        }}
+      >
         SUPER MARIO 2026
       </div>
 
@@ -858,7 +908,7 @@ const App = () => {
           justifyContent: 'space-between',
           padding: '0 20px',
           boxSizing: 'border-box',
-          pointerEvents: 'none' // Lets clicks pass through the gap
+          pointerEvents: 'none'
         }}>
           <div style={{ display: 'flex', gap: '15px', pointerEvents: 'auto' }}>
             <div id="btn-left" style={btnStyle}>←</div>
@@ -880,7 +930,8 @@ const App = () => {
             borderRadius: '20px',
             textAlign: 'center',
             border: '8px solid #FFD700',
-            width: '80%'
+            width: '80%',
+            pointerEvents: 'auto'
           }}>
             <div style={{ fontSize: '36px', marginBottom: '20px' }}>
               {win ? '🏆 YOU WON! 🏆' : '💀 GAME OVER 💀'}
