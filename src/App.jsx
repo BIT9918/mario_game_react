@@ -1042,20 +1042,21 @@ const App = () => {
         )}
       </div>
 
-      <div style={{
-        marginTop: '20px',
-        display: 'flex',
-        gap: '40px',
-        width: '800px',
-        maxWidth: '100%',
-        justifyContent: 'center'
-      }}>
-        <div style={{ display: 'flex', gap: 'px' }}>
-          <div id="btn-left" style={btnStyle}>←</div>
-          <div id="btn-right" style={btnStyle}>→</div>
-        </div>
-        <div id="btn-jump" style={{...btnStyle, width: '100px', borderRadius: '35px'}}>JUMP</div>
-      </div>
+     <div style={{
+  marginTop: '20px',
+  display: 'flex',
+  width: '100%', 
+  maxWidth: '800px', /* Keeps it from getting too stretched on giant monitors */
+  justifyContent: 'space-between', /* This is the magic property that pushes them to opposite ends */
+  padding: '0 20px', /* Adds a little breathing room on the edges */
+  boxSizing: 'border-box'
+}}>
+  <div style={{ display: 'flex', gap: '25px' }}>
+    <div  className='py-10 px-10' id="btn-left" style={btnStyle}>←</div>
+    <div className='py-10 px-10' id="btn-right" style={btnStyle}>→</div>
+  </div>
+  <div className='py-10 px-10' id="btn-jump" style={{...btnStyle, width: '100px', borderRadius: '35px'}}>JUMP</div>
+</div>
     </div>
   );
 };
