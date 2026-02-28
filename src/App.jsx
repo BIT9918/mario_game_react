@@ -221,6 +221,72 @@ const App = () => {
           { x: 4900, y: 100, speed: 0.5 },
           { x: 5800, y: 80, speed: 0.6 },
         ];
+      } else if (levelNum === 4) {
+        // LEVEL 4: Extremely hard, huge gaps, 8000 width, new Bird enemy
+        game.levelWidth = 8000;
+        game.totalCoins = 30;
+        
+        // Lots of tiny platforms and massive gaps
+        const hardPlatforms = [
+          { x: 0, y: 520, w: 300, h: 80, color: '#300000' }, // Start safe
+          { x: 450, y: 440, w: 80, h: 20, color: '#8B0000' },
+          { x: 700, y: 350, w: 80, h: 20, color: '#8B0000' },
+          { x: 1000, y: 250, w: 60, h: 20, color: '#8B0000' },
+          { x: 1300, y: 450, w: 300, h: 150, color: '#300000' }, // Mini safe zone
+          { x: 1800, y: 380, w: 100, h: 20, color: '#8B0000' },
+          { x: 2100, y: 280, w: 60, h: 20, color: '#8B0000' },
+          { x: 2400, y: 180, w: 60, h: 20, color: '#8B0000' },
+          { x: 2750, y: 480, w: 400, h: 120, color: '#300000' }, 
+          { x: 3400, y: 400, w: 80, h: 20, color: '#8B0000' },
+          { x: 3700, y: 300, w: 80, h: 20, color: '#8B0000' },
+          { x: 4000, y: 450, w: 200, h: 150, color: '#300000' },
+          { x: 4500, y: 350, w: 60, h: 20, color: '#8B0000' },
+          { x: 4800, y: 250, w: 60, h: 20, color: '#8B0000' },
+          { x: 5100, y: 150, w: 60, h: 20, color: '#8B0000' },
+          { x: 5400, y: 500, w: 300, h: 100, color: '#300000' },
+          { x: 6000, y: 400, w: 80, h: 20, color: '#8B0000' },
+          { x: 6300, y: 300, w: 80, h: 20, color: '#8B0000' },
+          { x: 6700, y: 200, w: 80, h: 20, color: '#8B0000' },
+          { x: 7100, y: 400, w: 150, h: 20, color: '#8B0000' },
+          { x: 7500, y: 520, w: 500, h: 80, color: '#300000' }, // End zone
+        ];
+        game.platforms = hardPlatforms;
+
+        // Introducting the new 'bird' enemy that flies to you
+        game.enemies = [
+          { x: 750, y: 150, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'bird' },
+          { x: 1400, y: 418, vx: -5.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 2200, y: 100, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'bird' },
+          { x: 2900, y: 448, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 30 },
+          { x: 3000, y: 448, vx: 0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'shooter', fireTimer: 0 },
+          { x: 3800, y: 150, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'bird' },
+          { x: 4100, y: 418, vx: -4.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+          { x: 4900, y: 100, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'bird' },
+          { x: 5500, y: 468, vx: -5.5, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'goomba' },
+          { x: 6100, y: 150, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'bird' },
+          { x: 6800, y: 100, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'bird' },
+          { x: 7200, y: 368, vx: -5.0, width: 34, height: 32, alive: true, frame: 0, deathTime: 0, type: 'spikey' },
+        ];
+
+        // 30 Coins spread out
+        game.coins = [];
+        for(let i = 0; i < 30; i++) {
+          game.coins.push({
+            x: 400 + (i * 240), 
+            y: 200 + (Math.sin(i) * 100), 
+            collected: false, 
+            bob: i 
+          });
+        }
+
+        game.clouds = [
+          { x: 500, y: 50, speed: 0.6 },
+          { x: 1500, y: 100, speed: 0.7 },
+          { x: 3000, y: 80, speed: 0.8 },
+          { x: 4500, y: 60, speed: 0.65 },
+          { x: 6000, y: 120, speed: 0.75 },
+          { x: 7500, y: 90, speed: 0.85 },
+        ];
       }
     };
 
@@ -267,15 +333,19 @@ const App = () => {
       } else if (game.level === 2) {
         grad.addColorStop(0, '#FF7F50');
         grad.addColorStop(1, '#FFDAB9');
-      } else {
+      } else if (game.level === 3) {
         grad.addColorStop(0, '#191970');
         grad.addColorStop(1, '#483D8B');
+      } else if (game.level === 4) {
+        // Red sky for level 4
+        grad.addColorStop(0, '#4A0000');
+        grad.addColorStop(1, '#8B0000');
       }
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 800, 600);
 
-      if (game.level === 3) {
-        ctx.fillStyle = '#FFFFFF';
+      if (game.level >= 3) {
+        ctx.fillStyle = game.level === 4 ? '#FFCCCC' : '#FFFFFF';
         for(let i=0; i<30; i++) {
           const starX = (i * 123 + game.camera.x * 0.05) % 800;
           const starY = (i * 87) % 300;
@@ -285,7 +355,7 @@ const App = () => {
         ctx.globalAlpha = 1;
       }
 
-      ctx.fillStyle = game.level === 1 ? '#4A7043' : game.level === 2 ? '#8B4513' : '#1A2A2A';
+      ctx.fillStyle = game.level === 1 ? '#4A7043' : game.level === 2 ? '#8B4513' : game.level === 3 ? '#1A2A2A' : '#110000';
       ctx.beginPath();
       ctx.moveTo(0 - game.camera.x * 0.2, 520);
       ctx.lineTo(400 - game.camera.x * 0.2, 380);
@@ -297,10 +367,10 @@ const App = () => {
       ctx.lineTo(1600 - game.camera.x * 0.2, 520);
       ctx.fill();
 
-      ctx.fillStyle = game.level === 3 ? '#A9A9A9' : '#FFFFFF';
+      ctx.fillStyle = game.level === 3 ? '#A9A9A9' : game.level === 4 ? '#550000' : '#FFFFFF';
       game.clouds.forEach((cloud) => {
         const cx = (cloud.x - game.camera.x * 0.4) % (game.levelWidth) - 100;
-        ctx.globalAlpha = game.level === 3 ? 0.4 : 0.9;
+        ctx.globalAlpha = game.level >= 3 ? 0.4 : 0.9;
         ctx.beginPath();
         ctx.ellipse(cx + 60, cloud.y, 70, 25, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -313,7 +383,7 @@ const App = () => {
       });
       ctx.globalAlpha = 1;
 
-      ctx.fillStyle = game.level === 1 ? '#2E8B57' : game.level === 2 ? '#556B2F' : '#2F4F4F';
+      ctx.fillStyle = game.level === 1 ? '#2E8B57' : game.level === 2 ? '#556B2F' : game.level === 3 ? '#2F4F4F' : '#220000';
       for (let i = 0; i < (game.levelWidth / 280); i++) {
         const bx = (i * 280 - (game.camera.x * 0.8) % 280) - 50;
         ctx.beginPath();
@@ -416,6 +486,34 @@ const App = () => {
         ctx.fillStyle = '#FF0000';
         ctx.fillRect(gx + 10, ey + 18, 3, 3);
         ctx.fillRect(gx + 22, ey + 18, 3, 3);
+      } else if (type === 'bird') {
+        // Draw the new Bird Enemy
+        const wingFlap = Math.sin(frame * 1.5) * 12; 
+        ctx.fillStyle = '#1E90FF'; // Blue body
+        ctx.beginPath();
+        ctx.arc(gx + 17, ey + 16, 12, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Flapping Wings
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.moveTo(gx + 17, ey + 16);
+        ctx.lineTo(gx - 8, ey + 8 + wingFlap);
+        ctx.lineTo(gx + 5, ey + 16);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(gx + 17, ey + 16);
+        ctx.lineTo(gx + 42, ey + 8 + wingFlap);
+        ctx.lineTo(gx + 29, ey + 16);
+        ctx.fill();
+        
+        // Angry Eyes
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(gx + 10, ey + 10, 6, 4);
+        ctx.fillRect(gx + 18, ey + 10, 6, 4);
+        ctx.fillStyle = '#FF0000'; // Red pupils!
+        ctx.fillRect(gx + 12, ey + 11, 2, 2);
+        ctx.fillRect(gx + 20, ey + 11, 2, 2);
       }
 
       ctx.restore();
@@ -514,7 +612,6 @@ const App = () => {
         ctx.fillText('← → MOVE    ↑ JUMP    COLLECT ALL COINS!', 360, 40);
       }
 
-      // God Mode visual indicator
       if (cheatsRef.current.godMode) {
         ctx.fillStyle = '#00FF00';
         ctx.font = 'bold 16px Arial';
@@ -613,6 +710,18 @@ const App = () => {
             });
             playSound(300, 0.1, 'square', 0.4);
           }
+        } else if (en.type === 'bird') {
+          // BIRD LOGIC: Flies towards player if within 800 pixels
+          en.frame += 0.15;
+          const dx = p.x - en.x;
+          const dy = p.y - en.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < 800) {
+            const birdSpeed = 2.5; // Fast, but fair
+            en.x += (dx / dist) * birdSpeed * dt;
+            en.y += (dy / dist) * birdSpeed * dt;
+          }
         } else {
           en.x += en.vx * dt;
           en.frame += 0.15;
@@ -632,15 +741,15 @@ const App = () => {
 
         if (checkCollision(p, { x: en.x, y: en.y, w: en.width, h: en.height })) {
           if (p.invuln > 0) return;
+          // You can stomp birds too! Just not spikeys.
           if (p.vy > 0 && p.y + p.height - 12 < en.y + en.height / 2 && en.type !== 'spikey') {
             en.alive = false;
             en.deathTime = Date.now();
             p.vy = -14;
-            game.score += en.type === 'shooter' ? 400 : 200;
+            game.score += en.type === 'shooter' ? 400 : en.type === 'bird' ? 500 : 200;
             playSound(600, 0.15, 'square', 0.6);
             createParticles(en.x + 17, en.y + 20, 22, '#8B4513', 4, 6);
           } else {
-            // God Mode prevents life loss from enemies
             if (!cheatsRef.current.godMode) {
               game.lives--;
             }
@@ -666,7 +775,6 @@ const App = () => {
         if (checkCollision(p, proj)) {
           proj.active = false;
           if (p.invuln <= 0) {
-            // God Mode prevents life loss from projectiles
             if (!cheatsRef.current.godMode) {
               game.lives--;
             }
@@ -723,7 +831,14 @@ const App = () => {
           playSound(800, 0.2);
           playSound(1200, 0.3);
           loadLevel(3);
+        } else if (game.level === 3) {
+          game.level = 4; // Move to Level 4
+          game.score += 3000;
+          playSound(800, 0.2);
+          playSound(1200, 0.3);
+          loadLevel(4);
         } else {
+          // Beat Level 4!
           game.isWin = true;
           setFinalScore(game.score);
           setWin(true);
@@ -734,7 +849,6 @@ const App = () => {
       }
 
       if (p.y > 650) {
-        // God Mode prevents death from falling in pits
         if (!cheatsRef.current.godMode) {
           game.lives--;
         }
@@ -773,7 +887,6 @@ const App = () => {
       if(e.preventDefault) e.preventDefault();
       game.keys[e.key] = true;
       
-      // CHEAT INTEGRATION: Infinite Jumps bypasses jump limit
       if (e.key === 'ArrowUp' && (cheatsRef.current.infiniteJump || game.player.jumpsRemaining > 0)) {
         game.player.vy = -16.5;
         if (!cheatsRef.current.infiniteJump) {
@@ -837,7 +950,6 @@ const App = () => {
     touchAction: 'none'
   };
 
-  // The hidden cheat trigger function
   const handleSecretClick = () => {
     clickCountRef.current += 1;
     clearTimeout(cheatTimerRef.current);
@@ -853,7 +965,7 @@ const App = () => {
     } else {
       cheatTimerRef.current = setTimeout(() => {
         clickCountRef.current = 0;
-      }, 1000); // Resets clicks if you wait longer than 1 second
+      }, 1000);
     }
   };
 
@@ -869,7 +981,6 @@ const App = () => {
       color: '#fff',
       overflow: 'hidden'
     }}>
-      {/* Secret Click Zone on Title */}
       <div 
         onClick={handleSecretClick}
         style={{ 
@@ -884,82 +995,66 @@ const App = () => {
       >
         SUPER MARIO 2026
       </div>
-
-      <div style={{ position: 'relative', width: '100%', maxWidth: '800px', aspectRatio: '4/3' }}>
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: '100%',
-            height: '100%',
-            border: '8px solid #000',
-            boxShadow: '0 0 50px rgba(255,215,0,0.8)',
-            imageRendering: 'pixelated',
-            boxSizing: 'border-box'
-          }}
+      
+      <div style={{ position: 'relative', boxShadow: '0 0 20px rgba(255,255,255,0.2)' }}>
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            display: 'block', 
+            background: '#000',
+            maxWidth: '100%',
+            height: 'auto'
+          }} 
         />
-
-        {/* Mobile Controller UI */}
-        <div style={{
-          position: 'absolute',
-          bottom: '20px',
-          left: '0',
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '0 20px',
-          boxSizing: 'border-box',
-          pointerEvents: 'none'
-        }}>
-          <div style={{ display: 'flex', gap: '15px', pointerEvents: 'auto' }}>
-            <div id="btn-left" style={btnStyle}>←</div>
-            <div id="btn-right" style={btnStyle}>→</div>
-          </div>
-          <div style={{ pointerEvents: 'auto' }}>
-            <div id="btn-jump" style={{...btnStyle, background: 'rgba(228, 0, 15, 0.4)'}}>A</div>
-          </div>
-        </div>
-
-        {(gameOver || win) && (
+        
+        {gameOver && (
           <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            background: 'rgba(0,0,0,0.9)',
-            padding: '30px',
-            borderRadius: '20px',
-            textAlign: 'center',
-            border: '8px solid #FFD700',
-            width: '80%',
-            pointerEvents: 'auto'
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            background: 'rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', zIndex: 10
           }}>
-            <div style={{ fontSize: '36px', marginBottom: '20px' }}>
-              {win ? '🏆 YOU WON! 🏆' : '💀 GAME OVER 💀'}
-            </div>
-            <div style={{ fontSize: '24px', marginBottom: '20px' }}>
-              FINAL SCORE: {finalScore}
-            </div>
-            <button
+            <h1 style={{ color: '#FF0000', fontSize: '48px', margin: '0 0 20px 0' }}>GAME OVER</h1>
+            <h2 style={{ color: '#FFF', margin: '0 0 30px 0' }}>FINAL SCORE: {finalScore}</h2>
+            <button 
               onClick={() => window.location.reload()}
-              style={{
-                fontSize: '20px',
-                padding: '15px 30px',
-                background: '#E4000F',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
+              style={{ padding: '15px 30px', fontSize: '24px', cursor: 'pointer', background: '#E4000F', color: '#FFF', border: 'none', borderRadius: '8px', fontWeight: 'bold' }}
+            >
+              TRY AGAIN
+            </button>
+          </div>
+        )}
+
+        {win && (
+          <div style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            background: 'rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', zIndex: 10
+          }}>
+            <h1 style={{ color: '#00FF00', fontSize: '48px', margin: '0 0 20px 0', textAlign: 'center' }}>YOU WIN!</h1>
+            <h2 style={{ color: '#FFF', margin: '0 0 30px 0' }}>FINAL SCORE: {finalScore}</h2>
+            <button 
+              onClick={() => window.location.reload()}
+              style={{ padding: '15px 30px', fontSize: '24px', cursor: 'pointer', background: '#228B22', color: '#FFF', border: 'none', borderRadius: '8px', fontWeight: 'bold' }}
             >
               PLAY AGAIN
             </button>
           </div>
         )}
       </div>
-      
-      <div style={{ marginTop: '15px', fontSize: '14px', opacity: 0.8, textAlign: 'center', padding: '0 10px' }}>
-        Desktop: ← → Move • ↑ Jump || Mobile: Use On-Screen Controls
+
+      <div style={{
+        marginTop: '20px',
+        display: 'flex',
+        gap: '40px',
+        width: '800px',
+        maxWidth: '100%',
+        justifyContent: 'center'
+      }}>
+        <div style={{ display: 'flex', gap: 'px' }}>
+          <div id="btn-left" style={btnStyle}>←</div>
+          <div id="btn-right" style={btnStyle}>→</div>
+        </div>
+        <div id="btn-jump" style={{...btnStyle, width: '100px', borderRadius: '35px'}}>JUMP</div>
       </div>
     </div>
   );
